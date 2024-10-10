@@ -169,8 +169,13 @@ class AddBlogsFragment : Fragment() {
                         progressBar.visibility = View.GONE
                         Toast.makeText(requireContext(), "Published", Toast.LENGTH_LONG).show()
                         clearInputFields()
-                        startActivity(Intent(requireContext(), DashboardActivity::class.java))
-                        requireActivity().finish()
+                        // Check if the fragment is still attached before starting a new activity
+                        if (isAdded) {
+                            activity?.let {
+                                startActivity(Intent(requireContext(), DashboardActivity::class.java))
+                                it.finish()
+                            }
+                        }
                     }.addOnFailureListener {
                         progressBar.visibility = View.GONE
                         Toast.makeText(requireContext(), "Failed to publish", Toast.LENGTH_LONG).show()

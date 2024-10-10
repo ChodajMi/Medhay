@@ -15,8 +15,7 @@ import java.util.*
 
 /**
  * A simple [Fragment] subclass.
- */
-class HomeFragment : Fragment() {
+ */class HomeFragment : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth // FirebaseAuth instance
     private lateinit var adapterPosts: AdapterPosts // Adapter for the RecyclerView
@@ -50,19 +49,26 @@ class HomeFragment : Fragment() {
         val databaseReference = FirebaseDatabase.getInstance().getReference("Posts")
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                posts.clear() // Clear previous posts
-                for (snapshot in dataSnapshot.children) {
-                    val modelPost = snapshot.getValue(ModelPost::class.java)
-                    if (modelPost != null) {
-                        posts.add(modelPost) // Add non-null posts to the list
+                // Ensure the fragment is still attached before updating UI
+                if (isAdded) {
+                    posts.clear() // Clear previous posts
+                    for (snapshot in dataSnapshot.children) {
+                        val modelPost = snapshot.getValue(ModelPost::class.java)
+                        if (modelPost != null) {
+                            posts.add(modelPost) // Add non-null posts to the list
+                        }
+                    }
+                    activity?.let { // Safe activity access
+                        adapterPosts = AdapterPosts(it, posts) // Set adapter with posts
+                        binding.postRecyclerview.adapter = adapterPosts // Bind adapter to RecyclerView
                     }
                 }
-                adapterPosts = AdapterPosts(requireActivity(), posts) // Set adapter with posts
-                binding.postRecyclerview.adapter = adapterPosts // Bind adapter to RecyclerView
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(activity, databaseError.message, Toast.LENGTH_LONG).show() // Error handling
+                if (isAdded) {
+                    Toast.makeText(activity, databaseError.message, Toast.LENGTH_LONG).show() // Error handling
+                }
             }
         })
     }
@@ -72,21 +78,28 @@ class HomeFragment : Fragment() {
         val databaseReference = FirebaseDatabase.getInstance().getReference("Posts")
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                posts.clear() // Clear previous search results
-                for (snapshot in dataSnapshot.children) {
-                    val modelPost = snapshot.getValue(ModelPost::class.java)
-                    if (modelPost != null &&
-                        (modelPost.title?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault())) == true ||
-                                modelPost.description?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault())) == true)) {
-                        posts.add(modelPost) // Add matching posts to the list
+                // Ensure the fragment is still attached before updating UI
+                if (isAdded) {
+                    posts.clear() // Clear previous search results
+                    for (snapshot in dataSnapshot.children) {
+                        val modelPost = snapshot.getValue(ModelPost::class.java)
+                        if (modelPost != null &&
+                            (modelPost.title?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault())) == true ||
+                                    modelPost.description?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault())) == true)) {
+                            posts.add(modelPost) // Add matching posts to the list
+                        }
+                    }
+                    activity?.let { // Safe activity access
+                        adapterPosts = AdapterPosts(it, posts) // Set adapter with search results
+                        binding.postRecyclerview.adapter = adapterPosts // Bind adapter to RecyclerView
                     }
                 }
-                adapterPosts = AdapterPosts(requireActivity(), posts) // Set adapter with search results
-                binding.postRecyclerview.adapter = adapterPosts // Bind adapter to RecyclerView
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(activity, databaseError.message, Toast.LENGTH_LONG).show() // Error handling
+                if (isAdded) {
+                    Toast.makeText(activity, databaseError.message, Toast.LENGTH_LONG).show() // Error handling
+                }
             }
         })
     }
