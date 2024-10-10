@@ -82,6 +82,8 @@ class ProfileFragment : Fragment() {
             imageUri = data.data
             binding.circularImageView.setImageURI(imageUri)
             uploadImageToFirebase()
+        } else {
+            Toast.makeText(context, "Image selection failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -119,6 +121,8 @@ class ProfileFragment : Fragment() {
                 .addOnFailureListener { exception ->
                     Toast.makeText(context, "Failed to upload image: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
+        }else {
+            Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT).show()
         }
     }
 

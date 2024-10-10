@@ -47,7 +47,7 @@ class AdapterPosts(
         val comments = post.pcomments ?: "0"
         val pid = post.ptime ?: ""
 
-        // Formatting the post time to "dd/MM/yyyy hh:mm aa"
+        // Formatting post time to "dd/MM/yyyy hh:mm aa"
         val calendar = Calendar.getInstance(Locale.ENGLISH)
         calendar.timeInMillis = ptime.toLong()
         val timedate = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString()
@@ -63,10 +63,10 @@ class AdapterPosts(
 
             setLikes(holder, ptime)
 
-            // Load user profile image with Glide
+            // Load user profile image using Glide
             Glide.with(context).load(dp)
-                .placeholder(R.drawable.ic_default_img) // Placeholder for loading
-                .error(R.drawable.ic_default_img) // Error image
+                .placeholder(R.drawable.ic_default_img) // Placeholder while loading
+                .error(R.drawable.ic_default_img) // In case of error
                 .into(picturetv)
 
             // Load post image if available
@@ -80,7 +80,7 @@ class AdapterPosts(
                 pimagetv.visibility = View.GONE
             }
 
-            // Click Listeners
+            // Click listeners for Like, Comment, and More options
             plikeb.setOnClickListener {
                 val intent = Intent(context, PostLikedByActivity::class.java)
                 intent.putExtra("pid", pid)
@@ -143,7 +143,7 @@ class AdapterPosts(
     }
 
     private fun deletePostWithImage(pid: String, image: String) {
-        val pd = ProgressBar(context) // Use ProgressBar instead of ProgressDialog
+        val pd = ProgressBar(context) // ProgressBar instead of ProgressDialog
         pd.visibility = View.VISIBLE // Show ProgressBar
 
         if (image.isNotEmpty()) {
@@ -160,21 +160,13 @@ class AdapterPosts(
     }
 
     private fun deletePostFromDatabase(pid: String, pd: ProgressBar) {
-        val query = postRef.orderByChild("ptime").equalTo(pid)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (ds in snapshot.children) {
-                    ds.ref.removeValue()
-                }
-                pd.visibility = View.GONE // Hide ProgressBar
-                Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_LONG).show()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                pd.visibility = View.GONE // Hide ProgressBar
-                Toast.makeText(context, "Failed to delete post", Toast.LENGTH_LONG).show()
-            }
-        })
+        postRef.child(pid).removeValue().addOnSuccessListener {
+            pd.visibility = View.GONE // Hide ProgressBar
+            Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_LONG).show()
+        }.addOnFailureListener {
+            pd.visibility = View.GONE // Hide ProgressBar
+            Toast.makeText(context, "Failed to delete post", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setLikes(holder: MyHolder, pid: String) {
