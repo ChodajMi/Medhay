@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "171553152618",
+    "firebase_url": "https://projectmedhay-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "projectmedhay",
+    "storage_bucket": "projectmedhay.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171553152618:android:55be6606245a37e72b7413",
+        "android_client_info": {
+          "package_name": "com.example.medhay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCN6ZXqlwj3T97KKjzyzNECe6oBpK2FgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
