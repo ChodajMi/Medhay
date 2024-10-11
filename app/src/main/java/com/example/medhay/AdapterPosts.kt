@@ -6,7 +6,7 @@ import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuItem
+import com.bumptech.glide.request.target.Target
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -79,16 +79,21 @@ class AdapterPosts(
 
             setLikes(holder, ptime)
 
+            // Load post image
             // Load post image if available
             if (image.isNotEmpty()) {
                 pimagetv.visibility = View.VISIBLE
-                Glide.with(context).load(image)
+                Glide.with(context)
+                    .load(image)
+                    .dontAnimate()  // Disable animations
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // Retain original size
                     .placeholder(R.drawable.ic_default_img) // Placeholder while loading
                     .error(R.drawable.ic_default_img) // In case of error
                     .into(pimagetv)
             } else {
                 pimagetv.visibility = View.GONE
             }
+
 
             // Click listeners for Like, Comment, and More options
             plikeb.setOnClickListener {
