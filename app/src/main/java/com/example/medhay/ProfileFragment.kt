@@ -44,16 +44,18 @@ class ProfileFragment : Fragment() {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!
+
         if (user == null) {
             Toast.makeText(context, "User is not logged in", Toast.LENGTH_SHORT).show()
             return null
         }
+
         storageReference = FirebaseStorage.getInstance().reference.child("profile_images")
         databaseReference = FirebaseDatabase.getInstance().reference.child("Users").child(user.uid) // Reference to user data in Firebase Database
 
         // Set initial name and profile picture
-        updateDisplayedName(user.displayName)
         loadProfileImage()
+        fetchAndDisplayUserName()  // Fetch name from Firebase Realtime Database
 
         // Set up listeners using binding
         binding.profilepic.setOnClickListener {
@@ -69,6 +71,25 @@ class ProfileFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun fetchAndDisplayUserName() {
+        // Fetch the user's name from Firebase Realtime Database
+        databaseReference.child("name").get().addOnSuccessListener { snapshot ->
+            val name = snapshot.getValue(String::class.java)
+            updateDisplayedName(name)
+        }.addOnFailureListener { exception ->
+            Toast.makeText(context, "Failed to load name: ${exception.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateDisplayedName(name: String?) {
+        // Update the TextView that displays the name below the profile picture
+        if (name.isNullOrEmpty()) {
+            binding.userNameTextView.text = "Anonymous"
+        } else {
+            binding.userNameTextView.text = name
+        }
     }
 
     private fun pickImageFromGallery() {
@@ -121,7 +142,7 @@ class ProfileFragment : Fragment() {
                 .addOnFailureListener { exception ->
                     Toast.makeText(context, "Failed to upload image: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
-        }else {
+        } else {
             Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT).show()
         }
     }
@@ -158,7 +179,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun reauthenticateUser(oldPassword: String, callback: (Boolean) -> Unit) {
-        val email = user?.email
+        val email = user.email
         val credential = EmailAuthProvider.getCredential(email!!, oldPassword)
 
         user.reauthenticate(credential).addOnCompleteListener { task ->
@@ -219,15 +240,6 @@ class ProfileFragment : Fragment() {
             } else {
                 Toast.makeText(context, "Failed to update name", Toast.LENGTH_SHORT).show()
             }
-        }
-    }
-
-    private fun updateDisplayedName(name: String?) {
-        // Update the TextView that displays the name below the profile picture
-        if (name.isNullOrEmpty()) {
-            binding.userNameTextView.text = "Anonymous"
-        } else {
-            binding.userNameTextView.text = name
         }
     }
 }

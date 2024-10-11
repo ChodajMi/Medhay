@@ -18,7 +18,6 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
-
 class AdapterPosts(
     private val context: Context,
     private val modelPosts: List<ModelPost>
@@ -47,22 +46,28 @@ class AdapterPosts(
         val comments = post.pcomments ?: "0"
         val pid = post.ptime ?: ""
 
-        // Fetching the profile image from the 'Users' node
+        // Fetching the profile image and name from the 'Users' node
         val userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid)
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val userProfileImage = snapshot.child("profileImageUrl").value as? String
+                val userName = snapshot.child("name").value as? String
+
                 // Load user profile image using Glide
                 Glide.with(context).load(userProfileImage ?: dp)
                     .placeholder(R.drawable.ic_default_img) // Placeholder while loading
                     .error(R.drawable.ic_default_img) // In case of error
                     .into(holder.binding.picturetv)
+
+                // Update user name in real-time
+                holder.binding.unametv.text = userName ?: name
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle errors if needed
             }
         })
+
         // Formatting post time to "dd/MM/yyyy hh:mm aa"
         val calendar = Calendar.getInstance(Locale.ENGLISH)
         calendar.timeInMillis = ptime.toLong()
@@ -70,7 +75,6 @@ class AdapterPosts(
 
         // Bind data to views
         holder.binding.apply {
-            unametv.text = name
             ptitletv.text = title
             descript.text = description
             utimetv.text = timedate
@@ -80,7 +84,6 @@ class AdapterPosts(
             setLikes(holder, ptime)
 
             // Load post image
-            // Load post image if available
             if (image.isNotEmpty()) {
                 pimagetv.visibility = View.VISIBLE
                 Glide.with(context)

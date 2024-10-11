@@ -15,7 +15,8 @@ import java.util.*
 
 /**
  * A simple [Fragment] subclass.
- */class HomeFragment : Fragment() {
+ */
+class HomeFragment : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth // FirebaseAuth instance
     private lateinit var adapterPosts: AdapterPosts // Adapter for the RecyclerView
