@@ -13,10 +13,10 @@ class ModelPost {
         ptime: String?,
         pcomments: String?,
         title: String?,
-        udp: String?,
+        uimage: String?,
         uemail: String?,
         uid: String?,
-        uimage: String?,
+        profileImageUrl: String?,
         uname: String?,
         plike: String?
     ) {
@@ -25,7 +25,7 @@ class ModelPost {
         this.ptime = ptime
         this.pcomments = pcomments
         this.title = title
-        this.udp = udp
+        this.profileImageUrl = profileImageUrl
         this.uemail = uemail
         this.uid = uid
         this.uimage = uimage
@@ -38,7 +38,7 @@ class ModelPost {
 
     var title: String? = null
 
-    var udp: String? = null
+    var profileImageUrl: String? = null
     var uemail: String? = null
     var uid: String? = null
     var uimage: String? = null

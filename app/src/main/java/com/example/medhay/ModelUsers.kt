@@ -6,7 +6,6 @@ class ModelUsers {
 
     constructor()
 
-    private var onlineStatus: String? = null
 
     constructor(
         name: String?,
@@ -16,7 +15,6 @@ class ModelUsers {
         uid: String?
     ) {
         this.name = name
-        this.onlineStatus = onlineStatus
         this.email = email
         this.profileImageUrl = profileImageUrl
         this.uid = uid

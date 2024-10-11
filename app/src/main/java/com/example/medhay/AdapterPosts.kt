@@ -41,12 +41,28 @@ class AdapterPosts(
         val title = post.title ?: "No Title"
         val description = post.description ?: "No Description"
         val ptime = post.ptime ?: ""
-        val dp = post.udp ?: ""
+        val dp = post.profileImageUrl ?: ""
         val plike = post.plike ?: "0"
         val image = post.uimage ?: ""
         val comments = post.pcomments ?: "0"
         val pid = post.ptime ?: ""
 
+        // Fetching the profile image from the 'Users' node
+        val userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid)
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userProfileImage = snapshot.child("profileImageUrl").value as? String
+                // Load user profile image using Glide
+                Glide.with(context).load(userProfileImage ?: dp)
+                    .placeholder(R.drawable.ic_default_img) // Placeholder while loading
+                    .error(R.drawable.ic_default_img) // In case of error
+                    .into(holder.binding.picturetv)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors if needed
+            }
+        })
         // Formatting post time to "dd/MM/yyyy hh:mm aa"
         val calendar = Calendar.getInstance(Locale.ENGLISH)
         calendar.timeInMillis = ptime.toLong()
@@ -62,12 +78,6 @@ class AdapterPosts(
             pcommentco.text = "$comments Comments"
 
             setLikes(holder, ptime)
-
-            // Load user profile image using Glide
-            Glide.with(context).load(dp)
-                .placeholder(R.drawable.ic_default_img) // Placeholder while loading
-                .error(R.drawable.ic_default_img) // In case of error
-                .into(picturetv)
 
             // Load post image if available
             if (image.isNotEmpty()) {
