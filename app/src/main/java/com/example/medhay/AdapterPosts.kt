@@ -94,26 +94,12 @@ class AdapterPosts(
                 pimagetv.visibility = View.GONE
             }
 
-
-            // Click listeners for Like, Comment, and More options
-            plikeb.setOnClickListener {
-                val intent = Intent(context, PostLikedByActivity::class.java)
-                intent.putExtra("pid", pid)
-                context.startActivity(intent)
-            }
-
             like.setOnClickListener {
                 handleLikeClick(holder, position)
             }
 
             morebtn.setOnClickListener {
                 showMoreOptions(morebtn, uid, myuid, ptime, image)
-            }
-
-            comment.setOnClickListener {
-                val intent = Intent(context, PostDetailsActivity::class.java)
-                intent.putExtra("pid", ptime)
-                context.startActivity(intent)
             }
         }
     }

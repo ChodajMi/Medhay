@@ -78,7 +78,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pimagetv"
-            android:background="@color/white"/>
+            android:background="#343434"
+            android:padding="3dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -122,7 +123,7 @@
                 android:text="Like"
                 android:drawableStart="@drawable/ic_unliked"
                 android:padding="5dp"
-                android:background="@color/white" />
+                android:backgroundTint="#808080" />
 
             <Button
                 android:id="@+id/comment"
@@ -132,7 +133,7 @@
                 android:text="Comment"
                 android:drawableStart="@drawable/ic_comment"
                 android:padding="5dp"
-                android:background="@color/white" />
+              android:backgroundTint="#808080" />
         </LinearLayout>
         <ProgressBar
             android:id="@+id/progressBar"
