@@ -1,4 +1,3 @@
-// RegistrationActivity.kt
 package com.example.medhay
 
 import android.content.Intent
@@ -10,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class RegistrationActivity : AppCompatActivity() {
     private lateinit var nameInput: EditText
@@ -18,12 +19,14 @@ class RegistrationActivity : AppCompatActivity() {
     private lateinit var signUpButton: Button
     private lateinit var alreadyRegisteredText: TextView
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
 
         auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference // Initialize Firebase Database reference
 
         nameInput = findViewById(R.id.name_input)
         emailInput = findViewById(R.id.email_input)
@@ -54,6 +57,9 @@ class RegistrationActivity : AppCompatActivity() {
                     Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
                     val user: FirebaseUser? = auth.currentUser
 
+                    // Save the user's data to Firebase Realtime Database
+                    saveUserToDatabase(user, name, email)
+
                     // Navigate directly to the Dashboard after successful registration
                     val intent = Intent(this, DashboardActivity::class.java)
                     startActivity(intent)
@@ -63,6 +69,29 @@ class RegistrationActivity : AppCompatActivity() {
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    // Save user data to Firebase Realtime Database
+    private fun saveUserToDatabase(user: FirebaseUser?, name: String, email: String) {
+        user?.let {
+            val userId = it.uid
+            val userMap = mapOf(
+                "name" to name,
+                "email" to email,
+                "profileImageUrl" to "", // You can leave this empty initially or update later with the user's profile image
+                "uid" to userId
+            )
+
+            // Save data to "Users" node
+            database.child("Users").child(userId).setValue(userMap)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "User data saved successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Failed to save user data: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
     }
 
     private fun navigateToLogin() {
